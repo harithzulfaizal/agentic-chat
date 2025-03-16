@@ -1,0 +1,5 @@
+.env
+.venv
+.DS_Store
+**/model_config.yaml
+**/__pycache__/

@@ -4,7 +4,7 @@ import os
 import ssl
 from typing import List, Optional
 from functools import lru_cache
-from googlesearch import Search
+from googlesearch import search
 import httpx
 from bs4 import BeautifulSoup
 import markdownify
@@ -81,7 +81,7 @@ async def get_relevant_web_pages(query: str) -> List[WebPage]:
         re.IGNORECASE,
     )
 
-    urls = [query] if bool(url_pattern.match(query)) else list(Search(query, num_results=3, region="my"))
+    urls = [query] if bool(url_pattern.match(query)) else list(search(query, num_results=3, region="my"))
     
     async with ClientSession(connector=TCPConnector(limit=5, ssl=ssl_context)) as session:
         tasks = []

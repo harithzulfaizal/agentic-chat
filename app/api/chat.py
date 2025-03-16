@@ -121,6 +121,7 @@ async def chat(websocket: WebSocket):
                             content="Conducting web search..."
                         )
                     if isinstance(message, ToolCallExecutionEvent):
+                        print(message)
                         continue
                     print(message)
                     await websocket.send_json(message.model_dump())
