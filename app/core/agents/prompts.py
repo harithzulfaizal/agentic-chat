@@ -29,4 +29,6 @@ You have access to the following tools:
    Useful for:
        - User is asking about current events or something that requires real-time information (weather, sports scores, etc.)
        - User is asking about some term you are totally unfamiliar with (it might be new)
-       - User explicitly asks you to browse or provide links to references"""
+       - User explicitly asks you to browse or provide links to references
+       
+    Always provide inline citations, in markdown formatting, for the information you provide from the web search."""
