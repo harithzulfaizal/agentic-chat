@@ -133,6 +133,7 @@ This repository provides an API for an agentic LLM (Large Language Model) chatbo
 
 ## Project Structure
 
+```
 ├── app
 │   ├── init.py
 │   ├── api
@@ -165,6 +166,7 @@ This repository provides an API for an agentic LLM (Large Language Model) chatbo
 ├── .env           # Environment variables
 ├── README.md      # Project README
 └── requirements.txt # Python dependencies
+```
 
 ## Agent Configuration
 
