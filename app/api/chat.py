@@ -22,6 +22,7 @@ from app.logger import logger
 from app.api.history import get_history
 from app.core.agents.orchestrator import get_team
 from app.core.tools.web_search import WebPage
+from app.core.tools.policy_search import Document
 
 model_config_path = os.getenv("MODEL_CONFIG_PATH")
 
@@ -57,17 +58,19 @@ async def chat(websocket: WebSocket):
                     if isinstance(message, TaskResult):
                         continue
                     if isinstance(message, ToolCallRequestEvent):
-                        message = TextMessage(
-                            source="WebSearchTool",
-                            content="Conducting web search..."
-                        )
+                        await websocket.send_json({
+                            "source":"ExternalSearchTool",
+                            "content":"Conducting external search..."
+                        })
+                        continue
+
                     if isinstance(message, ToolCallExecutionEvent):
                         print("tool output -------- ", message)
                         
                         function_results = message.content
                         for result in function_results:
                             if isinstance(result, FunctionExecutionResult) and not result.is_error and result.name == "get_relevant_web_pages":
-                                webpages = eval(result.content)  # This assumes result.content is a string representation of a list
+                                webpages = eval(result.content)  
                                 for webpage in webpages:
                                     print("inside web page -----", webpage.url)
                                     await websocket.send_json({
@@ -75,7 +78,19 @@ async def chat(websocket: WebSocket):
                                         "content": webpage.content,
                                         "type": "WebPageContent"
                                     })
+                            elif isinstance(result, FunctionExecutionResult) and not result.is_error and result.name == "get_relevant_policy_documents":
+                                policy_documents = eval(result.content) 
+                                # print(f"\n====================================\n{policy_documents}") 
+                                for policy_document, _ in policy_documents:
+                                    # print(f"\n====================================\n{policy_document}") 
+                                    metadata = policy_document.metadata
+                                    await websocket.send_json({
+                                        "source": metadata['source'],
+                                        "content": policy_document.page_content,
+                                        "type": "PolicyDocumentContent"
+                                    })
                         continue
+
                     print(message)
                     await websocket.send_json(message.model_dump())
                     if not isinstance(message, UserInputRequestedEvent):
@@ -97,6 +112,8 @@ async def chat(websocket: WebSocket):
                         await file.write(json.dumps(history))
                     
             except Exception as e:
+                import traceback
+                traceback.print_exc()
                 # Send error message to client
                 error_message = {
                     "type": "error",

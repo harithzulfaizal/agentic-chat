@@ -18,7 +18,7 @@ from app.logger import logger
 from app.api.history import get_history
 from app.core.agents.intent_agent import IntentAgent
 from app.core.agents.assistant_agent import KijangAgent
-from app.core.agents.prompts import kijang_prompt
+from app.core.agents.prompts import kijang_prompt, kijang_policy_prompt
 
 model_config_path = os.getenv("MODEL_CONFIG_PATH")
 
@@ -31,7 +31,7 @@ async def get_team(
     # Get model client from config.
     async with aiofiles.open(model_config_path, "r") as file:
         configs = yaml.safe_load(await file.read())
-        model_config = configs["models"]["gpt-4o-mini"]
+        model_config = configs["models"]["gpt-4o"]
     model_client = ChatCompletionClient.load_component(model_config)
 
     intent_agent = await IntentAgent.create(
@@ -41,8 +41,8 @@ async def get_team(
 
     kijang_agent = await KijangAgent.create(
         name="AssistantAgent",
-        model="gpt-4o-mini",
-        system_message=kijang_prompt.format(current_datetime=datetime.now().strftime('%Y-%m-%d'))
+        model="gpt-4o",
+        system_message=kijang_policy_prompt.format(current_datetime=datetime.now().strftime('%Y-%m-%d'))
     )
 
     kijang_reasoning_agent = await KijangAgent.create(

@@ -8,6 +8,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
 from app.core.tools.web_search import get_relevant_web_pages
+from app.core.tools.policy_search import get_relevant_policy_documents
 
 model_config_path = os.getenv("MODEL_CONFIG_PATH")
             
@@ -43,7 +44,7 @@ class KijangAgent:
             name=self.name,
             model_client=self.model_client,
             system_message=self.system_message,
-            tools=[get_relevant_web_pages],
+            tools=[get_relevant_web_pages, get_relevant_policy_documents],
             reflect_on_tool_use=True,
             tool_call_summary_format=True
         )

@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import markdownify
 import asyncio
 from pydantic import BaseModel
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, AsyncAzureOpenAI
 from aiohttp import ClientSession, TCPConnector
 from cachetools import TTLCache
 from ratelimit import limits, sleep_and_retry
@@ -30,7 +30,12 @@ def load_config():
         return configs["models"]["gpt-4o-mini"]
 
 model_config = load_config()
-async_client = AsyncOpenAI(api_key=model_config["config"]["api_key"])
+# async_client = AsyncOpenAI(api_key=model_config["config"]["api_key"])
+async_client = AsyncAzureOpenAI(
+    api_key=model_config["config"]["api_key"],
+    azure_endpoint=model_config["config"]["azure_endpoint"],
+    api_version=model_config["config"]["api_version"]
+    )
 
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
@@ -64,7 +69,8 @@ async def extract_content(html: str, query: str) -> Optional[str]:
     
     try:
         completion = await async_client.chat.completions.create(
-            model=model_config["config"]["model"],
+            # model=model_config["config"]["model"],
+            model=model_config["config"]["azure_deployment"],
             messages=[{
                 "role": "user", 
                 "content": f"Summarize the following content in 300 words specifically for information related to the '{query}':\n{markdown}"

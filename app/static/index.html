@@ -1258,7 +1258,31 @@
                 const collapsible = document.createElement('details');
                 const summary = document.createElement('summary');
                 
-                summary.textContent = message.url || 'Web Page Content';
+                summary.textContent = message.source || 'Web Page Content';
+                
+                // Create content container
+                const contentContainer = document.createElement('div');
+                contentContainer.className = 'content';
+                contentContainer.innerHTML = window.marked ? marked.parse(message.content) : message.content;
+                
+                // Add classes for styling
+                collapsible.classList.add('message');
+                collapsible.classList.add('system-message');
+                
+                // Assemble the elements
+                collapsible.appendChild(summary);
+                collapsible.appendChild(contentContainer);
+                
+                // Add to messages container
+                messagesContainer.appendChild(collapsible);
+                scrollToBottom();
+            }
+            else if (message.type === 'PolicyDocumentContent') {
+                // Create collapsible container
+                const collapsible = document.createElement('details');
+                const summary = document.createElement('summary');
+                
+                summary.textContent = message.source || 'Policy Document Content';
                 
                 // Create content container
                 const contentContainer = document.createElement('div');
